@@ -1,18 +1,12 @@
-const findingroutes = require("./routers/findingroutes");
-
-
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 
 const authroutes = require("./routers/authroutes");
+const findingroutes = require("./routers/findingroutes");
+const aiRoutes = require("./routers/airoutes");
 
 const app = express();
-
-const aiRoutes = require("./routers/airoutes");
-app.use("/api/ai", aiRoutes);
-
-const path = require("path");
-app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 app.use(cors({
   origin: "*",
@@ -20,10 +14,15 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use("/api/findings", findingroutes);
 
-app.get("/", (req, res) => res.json({ message: "ArchTen API OK" }));
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 app.use("/api/auth", authroutes);
+app.use("/api/findings", findingroutes);
+app.use("/api/ai", aiRoutes);
+
+app.get("/", (req, res) => {
+  res.json({ message: "ArchTen API OK" });
+});
 
 module.exports = app;

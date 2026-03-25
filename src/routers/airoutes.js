@@ -1,26 +1,18 @@
 const express = require("express");
 const multer = require("multer");
+const { predictImage } = require("../controllers/aicontroller");
 
 const router = express.Router();
 
-const upload = multer({ storage: multer.memoryStorage() });
+const storage = multer.memoryStorage();
 
-router.post("/predict", upload.single("image"), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ message: "Imagen requerida" });
-    }
-
-    return res.json({
-      label: "POTENCIAL ARQUEOLOGICO",
-      score: 0.85,
-    });
-  } catch (e) {
-    return res.status(500).json({
-      message: "Error IA",
-      error: e.message,
-    });
-  }
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024,
+  },
 });
+
+router.post("/predict", upload.single("image"), predictImage);
 
 module.exports = router;
